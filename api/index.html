@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SG Border Traffic Dashboard</title>
+  <style>
+    body { font-family: Poppins, sans-serif; background:#0f172a; color:#e2e8f0; text-align:center; }
+    h1 { color:#38bdf8; margin:20px; }
+    .cam-container { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+    .card { background:#1e293b; border-radius:12px; padding:10px; box-shadow:0 0 10px rgba(56,189,248,0.2); }
+    img { width:300px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <h1>Live Traffic at Woodlands & Tuas Checkpoints</h1>
+  <div id="cams" class="cam-container"></div>
+
+  <script>
+    async function loadCameras() {
+      const res = await fetch("/api/traffic");
+      const cameras = await res.json();
+
+      const camDiv = document.getElementById("cams");
+      camDiv.innerHTML = "";
+      cameras.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>Camera ${c.CameraID}</h3>
+          <img src="${c.ImageLink}" alt="Traffic Camera">
+          <p>Lat: ${c.Latitude.toFixed(4)}, Lng: ${c.Longitude.toFixed(4)}</p>
+        `;
+        camDiv.appendChild(card);
+      });
+    }
+
+    loadCameras();
+    setInterval(loadCameras, 60000); // refresh every 60s
+  </script>
+</body>
+</html>
